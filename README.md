@@ -1,5 +1,5 @@
 نمونه قالب‌بندی:
-markdown
+
 Copy code
 # آموزش اجرای نود Hyperspace
 
