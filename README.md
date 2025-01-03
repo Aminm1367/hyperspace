@@ -1,89 +1,100 @@
-نمونه قالب‌بندی:
+# آموزش راه‌اندازی نود Hyperspace
 
-Copy code
-# آموزش اجرای نود Hyperspace
+در این آموزش یاد می‌گیرید چگونه یک نود Hyperspace را روی سرور VPS خود راه‌اندازی کنید
+## پیش‌نیازها
+1. **یک سرور VPS با سیستم‌عامل Ubuntu 20.04 یا بالاتر.**
+2. **اتصال به اینترنت.**
+3. **کلید خصوصی (Private Key) از وب‌سایت Hyperspace.**
 
-در این آموزش مراحل نصب و اجرای نود Hyperspace توضیح داده شده است.
+   
+## مراحل نصب و راه‌اندازی
 
----
+### 1. نصب ابزار AIOS
+برای دانلود و نصب ابزار AIOS، دستور زیر را اجرا کنید:
+```bash
+   curl https://download.hyper.space/api/install | bash
+   ```
+تنظیمات Bash را بارگذاری کنید:
+ ```bash
+   source /root/.bashrc
+   ```
 
-## ۱. نصب AIOS
+### 2. ایجاد فایل برای ذخیره کلید خصوصی:
+با استفاده از ویرایشگر nano یک فایل ایجاد کنید:
+```bash
+  nano my.pem
+  ```
+کلید خصوصی را در این فایل جای‌گذاری کرده و ذخیره کنید:
 
-برای نصب و راه‌اندازی AIOS، دستور زیر را وارد کنید:
+برای ذخیره، کلیدهای Ctrl + X، سپس Y و Enter را فشار دهید. دسترسی به فایل را محدود کنید:
+ ```bash
+  chmod 600 my.pem
+  ```
+
+### 3. ایجاد جلسه Screen:
+```bash
+   screen -S airdropnode_aios
+   ```
+سپس نود AIOS را راه‌اندازی کنید:
+```bash
+   aios-cli start
+   ```
+برای خروج از Screen بدون توقف فرآیند:
+
+کلیدهای Ctrl + A و سپس D را فشار دهید.
+
+
+### 4. مدیریت مدل‌ها و انتخاب Tier:
+لیست مدل‌های موجود را مشاهده کنید:
 
 ```bash
-curl https://download.hyper.space/api/install | bash
-بعد از اتمام نصب، برای اعمال تغییرات، دستور زیر را اجرا کنید:
+   aios-cli models available
+   ```
+یک مدل را اضافه کنید (مثلاً):
+```bash
+  aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf
+  ```
+باید به حجم مدل ها دقت کنید بعضیا خیلی سنگین هستند.
 
-bash
-Copy code
-source /root/.bashrc
-۲. ذخیره کلید خصوصی
-ابتدا یک فایل جدید به نام my.pem ایجاد کنید:
 
-bash
-Copy code
-nano my.pem
-کلید خصوصی خود را داخل این فایل قرار دهید و آن را ذخیره کنید (Ctrl + X و سپس Enter را بزنید). بعد از آن سطح دسترسی فایل را تغییر دهید:
 
-bash
-Copy code
-chmod 600 my.pem
-۳. اجرای نود
-برای اجرای نود، ابتدا یک اسکرین جدید باز کنید:
+### .5 وارد کردن کلید خصوصی و ورود به شبکه Hive:
 
-bash
-Copy code
-screen -S airdropnode_aios
-سپس دستور زیر را برای شروع نود وارد کنید:
+کلید خصوصی را وارد کنید:
+```bash
+  aios-cli hive import-keys ./my.pem
+  ```
+ورود به شبکه:
+```bash
+aios-cli hive login
+aios-cli hive connect
+```
 
-bash
-Copy code
-aios-cli start
-برای خروج از اسکرین بدون بستن آن، از ترکیب کلید‌های زیر استفاده کنید:
 
-text
-Copy code
-CTRL + A + D
-۴. انتخاب مدل و Tier
-ابتدا لیست مدل‌های موجود را مشاهده کنید:
-
-bash
-Copy code
-aios-cli models available
-سپس Tier مناسب را انتخاب کنید (به عنوان مثال Tier 3):
-
-bash
-Copy code
-aios-cli hive select-tier 3
-مدل مناسب را اضافه کنید (مثال):
-
-bash
-Copy code
-aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf
-۵. بررسی وضعیت
-برای مشاهده وضعیت کلید عمومی و خصوصی، دستور زیر را اجرا کنید:
-
-bash
-Copy code
-aios-cli hive whoami
-برای مشاهده امتیازات:
-
-bash
-Copy code
+### 6. بررسی امتیازات و وضعیت کلیدها:
+مشاهده امتیازات:
+```bash
 aios-cli hive points
-نکات پایانی
-در صورت نیاز به توقف یا راه‌اندازی مجدد نود، از دستورات زیر استفاده کنید:
+```
+بررسی کلید خصوصی و عمومی:
+```bash
+aios-cli hive whoami
+```
 
-توقف نود:
 
-bash
-Copy code
+### 7. راه‌اندازی مجدد یا ادامه فرآیند:
+
+برای توقف و راه‌اندازی مجدد:
+```bash
 aios-cli kill
-راه‌اندازی مجدد:
-
-bash
-Copy code
 aios-cli start --connect
-yaml
-Copy code
+```
+برای بازگشت به Screen:
+
+```bash
+screen -r airdropnode_aios
+```
+
+
+## منابع بیشتر:
+مستندات رسمی در GitHub: Hyperspace AIOS CLI
